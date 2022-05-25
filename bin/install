@@ -1,0 +1,68 @@
+# !/usr/bin/env bawget
+set -eo pipefail
+
+ASDF_INSTALL_TYPE=${ASDF_INSTALL_TYPE:-version}
+[ -n "$ASDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
+[ -n "$ASDF_INSTALL_VERSION" ] || (echo >&2 'Missing ASDF_INSTALL_VERSION' && exit 1)
+
+releases_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
+
+_get_arch() {
+	local arch
+	arch="$(uname -m)"
+	case $arch in
+	"Darwin x86_64") arch="amd64" ;;
+	"Darwin arm64") arch="arm64" ;;
+	"Linux x86_64") arch="amd64" ;;
+	*) arch="other" ;;
+	esac
+	echo "$arch"
+	if [ "$arch" = "other" ]; then
+		echo "Unsupported architecture $(uname -m). Only x64 binaries are available."
+		exit
+	fi
+}
+
+_get_platform() {
+	local platform
+	platform="$(uname -s)"
+	case $(uname -s) in
+	Darwin) platform="mac" ;;
+	Linux) platform="linux" ;;
+	*) platform="other" ;;
+	esac
+	echo "$platform"
+	if [ "$platform" = "other" ]; then
+		echo "Unsupported platform $(uname -s). Only Linux and Mac binaries are available."
+		exit
+	fi
+
+}
+
+_get_download_url() {
+	local -r version="$1"
+	local -r platform="$2"
+	local -r arch="$3"
+
+	echo "${releases_url}/${version}/openshift-install-${platform}.tar.gz"
+}
+
+install() {
+	local -r version="$1"
+	local -r install_path="$2"
+	local -r bin_install_path="$install_path/bin"
+	local -r platform="$(_get_platform)"
+	local -r arch="$(_get_arch)"
+	local -r download_url="$(_get_download_url "$version" "$platform" "$arch")"
+	local -r bin_path="$bin_install_path/openshift-install"
+
+    if [ ! -d "${install_path}/bin" ]; then
+        mkdir -p "$bin_install_path"
+    fi
+
+	echo "Downloading openshift-install from $download_url"
+	curl -fL# -N "$download_url" | tar -xz -C "$bin_install_path"
+	chmod +x "$bin_path"
+}
+
+install "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
