@@ -8,7 +8,13 @@
 
 ```bash
 asdf plugin add openshift-install https://github.com/hhemied/asdf-openshift-install.git
+```
+
+```basn
 asdf list all openshift-install
+```
+
+```bash
 asdf install openshift-install stable-4.10
 ```
 
