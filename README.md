@@ -18,6 +18,14 @@ asdf list all openshift-install
 asdf install openshift-install stable-4.10
 ```
 
+```bash
+asdf shell openshift-install stable-4.10
+```
+
+```bash
+asdf global openshift-install stable-4.10
+```
+
 ## Use
 
 Check the [asdf](https://github.com/asdf-vm/asdf) README for instructions on how to install and manage versions of openshift-install.
