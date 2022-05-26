@@ -16,7 +16,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: [macos-latest, ubuntu-latest]
+          - os:
+              - macos-latest
+              - ubuntu-latest
 
     steps:
       - name: Test plugin
