@@ -56,9 +56,9 @@ install() {
 	local -r download_url="$(_get_download_url "$version" "$platform" "$arch")"
 	local -r bin_path="$bin_install_path/openshift-install"
 
-    if [ ! -d "${install_path}/bin" ]; then
-        mkdir -p "$bin_install_path"
-    fi
+	if [ ! -d "${install_path}/bin" ]; then
+		mkdir -p "$bin_install_path"
+	fi
 
 	echo "Downloading openshift-install from $download_url"
 	curl -fL# -N "$download_url" | tar -xz -C "$bin_install_path"
