@@ -44,7 +44,7 @@ _get_download_url() {
 	local -r platform="$2"
 	local -r arch="$3"
 
-	echo "${releases_url}/${version}/openshift-install-${platform}.tar.gz"
+	echo "${releases_url}/${version}/openshift-install-${platform}-${version}.tar.gz"
 }
 
 install() {
