@@ -23,5 +23,3 @@ jobs:
         uses: asdf-vm/actions/plugin-test@v1
         with:
           command: "openshift-install version"
-        env:
-          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
