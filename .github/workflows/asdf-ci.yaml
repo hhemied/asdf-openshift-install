@@ -11,14 +11,14 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  plugin_test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - os:
-              - macos-latest
-              - ubuntu-latest
+        os:
+          - macos-latest
+          - ubuntu-latest
 
     steps:
       - name: Test plugin
