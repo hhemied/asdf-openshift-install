@@ -1,4 +1,4 @@
-# asdf-oc
+# asdf-openshift-install
 
 ![CI](https://github.com/hhemied/asdf-openshift-install/workflows/CI/badge.svg?branch=main)
 
