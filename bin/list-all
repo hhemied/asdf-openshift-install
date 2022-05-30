@@ -3,23 +3,18 @@
 set -Eeuo pipefail
 
 releases_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
-cmd="curl -L -s $releases_url"
+
+function sort_versions() {
+	sed 's/<a href="//g' | sed 's/\/">//g' | sort -V
+}
+
+function oi_versions() {
+	curl -sL "$releases_url" | grep -o "<a href=\"\(\(latest\|candidate\|stable\|fast\)-\)\?\([0-9\.\-]\)\+/\">"
+}
 
 list_all() {
-	local versions=""
-	local version
-	local v
-
-	for v in $(curl -s "${releases_url}/" |
-		grep -o "<a href=\"\(\(latest\|candidate\|stable\|fast\)-\)\?\([0-9\.\-]\)\+/\">" | sed 's/<a href="//g; s/[+]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$//; G; s/\n/ /; s/\/">//g' | sort -V); do
-		version="${v}"
-		if [[ -z ${versions} ]]; then
-			versions="${version}"
-		else
-			versions="${version} ${versions}"
-		fi
-	done
-	echo "${versions}"
+	versions="$(oi_versions | sort_versions)"
+	echo $versions
 }
 
 list_all
