@@ -5,7 +5,8 @@ ASDF_INSTALL_TYPE=${ASDF_INSTALL_TYPE:-version}
 [ -n "$ASDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
 [ -n "$ASDF_INSTALL_VERSION" ] || (echo >&2 'Missing ASDF_INSTALL_VERSION' && exit 1)
 
-
+# https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp/stable/
+releases_url="https://mirror.openshift.com/pub/openshift-v4/${arch}/clients/ocp"
 
 _get_arch() {
 	local arch
@@ -40,14 +41,13 @@ _get_platform() {
 
 }
 
-releases_url="https://mirror.openshift.com/pub/openshift-v4/${arch}/clients/ocp"
 
 _get_download_url() {
 	local -r version="$1"
 	local -r platform="$2"
 	local -r arch="$3"
 
-	echo "${releases_url}/${version}/openshift-install-${platform}.tar.gz"
+	echo "https://mirror.openshift.com/pub/openshift-v4/${arch}/clients/ocp/${version}/openshift-install-${platform}.tar.gz"
 }
 
 
