@@ -13,7 +13,7 @@ _get_arch() {
 	case $arch in
 	"Darwin x86_64") arch="amd64" ;;
 	"Darwin arm64") arch="arm64" ;;
-	"x86_64") arch="amd64" ;;
+	"Linux") arch="amd64" ;;
 	"aarch64") arch="aarch64" ;;
 	*) arch="other" ;;
 	esac
