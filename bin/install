@@ -5,6 +5,9 @@ ASDF_INSTALL_TYPE=${ASDF_INSTALL_TYPE:-version}
 [ -n "$ASDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
 [ -n "$ASDF_INSTALL_VERSION" ] || (echo >&2 'Missing ASDF_INSTALL_VERSION' && exit 1)
 
+echo $(uname -s)
+echo $(uname -m)
+
 # https://mirror.openshift.com/pub/openshift-v4/amd64/clients/ocp/stable/
 releases_url="https://mirror.openshift.com/pub/openshift-v4/${arch}/clients/ocp"
 
