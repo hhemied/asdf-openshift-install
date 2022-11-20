@@ -48,7 +48,7 @@ _get_download_url() {
 	echo "${releases_url}/${version}/openshift-install-${platform}.tar.gz"
 }
 
-releases_url="https://mirror.openshift.com/pub/openshift-v4/${arch}/lients/ocp"
+releases_url="https://mirror.openshift.com/pub/openshift-v4/${arch}/clients/ocp"
 
 install() {
 	local -r version="$1"
