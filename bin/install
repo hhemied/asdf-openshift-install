@@ -17,7 +17,7 @@ install_oi() {
   "Darwin x86_64") arch="" ;;
   "Darwin arm64") arch="-arm64" ;;
   "Linux x86_64") arch="" ;;
-  "Linux aarch64" | "Linux arm64") arch="-aarch64" ;;
+  "Linux aarch64" | "Linux arm64") arch="-arm64" ;;
   *) arch="other" ;;
   esac
 
