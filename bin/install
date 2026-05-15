@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Added 'x' to print trace
 set -ex
 
