@@ -1,20 +1,16 @@
-# !/usr/bin/env bash
+#!/usr/bin/env bash
+set -eo pipefail
 
-set -Eeuo pipefail
+releases_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
 
-releases_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp"
+# Fetch the release page, extract the version directories, strip HTML, and sort.
+# - grep: specifically matches pure version numbers (4.14.8) and channels (stable-4.20)
+# - sed 1: removes the start of the href tag
+# - sed 2: removes the trailing slash and closing tag
+# - sort -V: ensures 4.2 comes before 4.10 (Version sort)
 
-function sort_versions() {
-	sed 's/<a href="//g' | sed 's/\/">//g' | sort -V
-}
-
-function oi_versions() {
-	curl -sL "$releases_url" | grep -o "<a href=\"\(\(latest\|candidate\|stable\|fast\)-\)\?\([0-9\.\-]\)\+/\">"
-}
-
-list_all() {
-	versions="$(oi_versions | sort_versions)"
-	echo $versions
-}
-
-list_all
+curl --silent --location "$releases_url" \
+  | grep -o "<a href=\"\(\(latest\|candidate\|stable\|fast\)-\)\?\([0-9\.\-]\)\+/\">" \
+  | sed 's/<a href="//g' \
+  | sed 's/\/">//g' \
+  | sort -V
