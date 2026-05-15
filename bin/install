@@ -1,25 +1,71 @@
 #!/usr/bin/env bash
+set -eo pipefail
 
-# Added 'x' to print trace
-set -ex
+# Enable tracing to see exactly which line fails in GitHub Actions logs
+set -x
 
 install_oi() {
-  local download_path=$1
+  local install_version=$1
   local install_path=$2
+  local bin_dir="${install_path}/bin"
 
-  # DEBUG: Check if the file is actually here before copying
-  echo "--- CHECKING IF BINARY EXISTS BEFORE COPY ---"
-  ls -la "${download_path}"
+  # 1. Detect OS
+  case $(uname -s) in
+  Darwin) os="mac" ;;
+  *) os="linux" ;;
+  esac
 
-  mkdir -p "${install_path}/bin"
+  # 2. Detect Architecture
+  case $(uname -m -s) in
+  "Darwin x86_64") arch="" ;;
+  "Darwin arm64") arch="-arm64" ;;
+  "Linux x86_64") arch="" ;;
+  "Linux aarch64" | "Linux arm64") arch="-aarch64" ;;
+  *) arch="other" ;;
+  esac
 
-  # Copy the extracted binary
-  cp "${download_path}/openshift-install" "${install_path}/bin/openshift-install"
+  if [ "$arch" = "other" ]; then
+    echo "Unsupported architecture $(uname -m)."
+    exit 1
+  fi
 
-  chmod +x "${install_path}/bin/openshift-install"
+  # 3. Construct Download URL
+  # Red Hat uses a different naming convention for "channels" (stable-4.14)
+  # vs "exact versions" (4.14.10).
+  if [[ "$install_version" =~ ^(stable|fast|candidate|latest)(-[0-9]+\.[0-9]+)?$ ]]; then
+    # Channel URL: openshift-install-mac-arm64.tar.gz
+    download_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}.tar.gz"
+  else
+    # Version URL: openshift-install-mac-arm64-4.14.10.tar.gz
+    download_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}-${install_version}.tar.gz"
+  fi
+
+  # 4. Perform Installation
+  mkdir -p "$bin_dir"
+
+  echo "Downloading openshift-install from ${download_url}"
+
+  # Download and extract directly into the bin directory
+  # -f fails on 404, -L follows redirects, -s silent
+  curl -fLsS "${download_url}" | tar -xz -C "$bin_dir"
+
+  # Final check and permissions
+  if [ -f "${bin_dir}/openshift-install" ]; then
+    chmod +x "${bin_dir}/openshift-install"
+  else
+    echo "Error: openshift-install binary not found after extraction."
+    ls -la "$bin_dir"
+    exit 1
+  fi
 }
 
-[ -n "$ASDF_DOWNLOAD_PATH" ] || exit 1
-[ -n "$ASDF_INSTALL_PATH" ] || exit 1
+# Only use the variables that are GUARANTEED to exist
+ASDF_INSTALL_VERSION="${ASDF_INSTALL_VERSION:-$1}"
+ASDF_INSTALL_PATH="${ASDF_INSTALL_PATH:-$2}"
 
-install_oi "$ASDF_DOWNLOAD_PATH" "$ASDF_INSTALL_PATH"
+if [ -z "$ASDF_INSTALL_VERSION" ] || [ -z "$ASDF_INSTALL_PATH" ]; then
+  echo "Error: Missing version or install path variables."
+  exit 1
+fi
+
+install_oi "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
