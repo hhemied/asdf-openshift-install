@@ -2,55 +2,21 @@
 set -e
 
 install_oi() {
-    local install_version=$1
-    local install_path=$2
+  local download_path=$1
+  local install_path=$2
 
-    # 1. Detect OS
-    case $(uname -s) in
-        Darwin) os="mac" ;;
-        *) os="linux" ;;
-    esac
+  # Create the final bin directory
+  mkdir -p "${install_path}/bin"
 
-    # 2. Detect Architecture (matching Red Hat's CDN suffix naming)
-    case $(uname -m -s) in
-        "Darwin x86_64") arch="" ;;
-        "Darwin arm64") arch="-arm64" ;;
-        "Linux x86_64") arch="" ;;
-        "Linux aarch64" | "Linux arm64") arch="-aarch64" ;;
-        *) arch="other" ;;
-    esac
+  # Copy the extracted binary from the download path to the install path
+  cp "${download_path}/openshift-install" "${install_path}/bin/openshift-install"
 
-    if [ "$arch" = "other" ]; then
-        echo "Unsupported architecture $(uname -m). Only x64 and arm64 binaries are available."
-        exit 1
-    fi
-
-    # 3. Construct Download URL
-    # Handle the difference between release channels (stable-4.20) and exact versions (4.14.8)
-    if [[ "$install_version" =~ ^(stable|fast|candidate|latest)(-[0-9]+\.[0-9]+)?$ ]]; then
-        # Channel directories use unversioned filenames
-        download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}.tar.gz"
-    else
-        # Exact version directories use versioned filenames
-        download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}-${install_version}.tar.gz"
-    fi
-
-    # 4. Install
-    if [ ! -d "${install_path}/bin" ]; then
-        mkdir -p "${install_path}/bin"
-    fi
-
-    echo "Downloading openshift-install from ${download}"
-    
-    # Download and extract directly into the bin folder
-    curl -fL# -N "${download}" | tar -xz -C "${install_path}/bin"
-    
-    # Ensure the binary is executable
-    chmod +x "${install_path}/bin/openshift-install"
+  # Ensure it is executable
+  chmod +x "${install_path}/bin/openshift-install"
 }
 
-# Ensure required variables from mise/asdf are present
-[ -n "$AASDF_INSTALL_PATH"SDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
-[ -n "$ASDF_INSTALL_VERSION" ] || (echo >&2 'Missing ASDF_INSTALL_VERSION' && exit 1)
+# Ensure required variables are present
+[ -n "$ASDF_DOWNLOAD_PATH" ] || (echo >&2 'Missing ASDF_DOWNLOAD_PATH' && exit 1)
+[ -n "$ASDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
 
-install_oi "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+install_oi "$ASDF_DOWNLOAD_PATH" "$ASDF_INSTALL_PATH"
