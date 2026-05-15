@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-# Enable tracing to see exactly which line fails in GitHub Actions logs
-set -x
-
 install_oi() {
   local install_version=$1
   local install_path=$2
