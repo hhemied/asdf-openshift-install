@@ -22,6 +22,6 @@ jobs:
 
     steps:
       - name: Test plugin
-        uses: asdf-vm/actions/plugins-add@v4 
+        uses: asdf-vm/actions/setup@v4
         with:
           command: "openshift-install version"
