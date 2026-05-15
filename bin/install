@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
-# executable
-set -e
+# Added 'x' to print trace
+set -ex
 
 install_oi() {
   local download_path=$1
   local install_path=$2
 
-  # Create the final bin directory
+  # DEBUG: Check if the file is actually here before copying
+  echo "--- CHECKING IF BINARY EXISTS BEFORE COPY ---"
+  ls -la "${download_path}"
+
   mkdir -p "${install_path}/bin"
 
-  # Copy the extracted binary from the download path to the install path
+  # Copy the extracted binary
   cp "${download_path}/openshift-install" "${install_path}/bin/openshift-install"
 
-  # Ensure it is executable
   chmod +x "${install_path}/bin/openshift-install"
 }
 
-# Ensure required variables are present
-[ -n "$ASDF_DOWNLOAD_PATH" ] || (echo >&2 'Missing ASDF_DOWNLOAD_PATH' && exit 1)
-[ -n "$ASDF_INSTALL_PATH" ] || (echo >&2 'Missing ASDF_INSTALL_PATH' && exit 1)
+[ -n "$ASDF_DOWNLOAD_PATH" ] || exit 1
+[ -n "$ASDF_INSTALL_PATH" ] || exit 1
 
 install_oi "$ASDF_DOWNLOAD_PATH" "$ASDF_INSTALL_PATH"
