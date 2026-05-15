@@ -1,41 +1,42 @@
 #!/usr/bin/env bash
+# executable
 set -e
 
 download_oi() {
-    local install_version=$1
-    local download_path=$2
+  local install_version=$1
+  local download_path=$2
 
-    # 1. Detect OS
-    case $(uname -s) in
-        Darwin) os="mac" ;;
-        *) os="linux" ;;
-    esac
+  # 1. Detect OS
+  case $(uname -s) in
+  Darwin) os="mac" ;;
+  *) os="linux" ;;
+  esac
 
-    # 2. Detect Architecture
-    case $(uname -m -s) in
-        "Darwin x86_64") arch="" ;;
-        "Darwin arm64") arch="-arm64" ;;
-        "Linux x86_64") arch="" ;;
-        "Linux aarch64" | "Linux arm64") arch="-aarch64" ;;
-        *) arch="other" ;;
-    esac
+  # 2. Detect Architecture
+  case $(uname -m -s) in
+  "Darwin x86_64") arch="" ;;
+  "Darwin arm64") arch="-arm64" ;;
+  "Linux x86_64") arch="" ;;
+  "Linux aarch64" | "Linux arm64") arch="-aarch64" ;;
+  *) arch="other" ;;
+  esac
 
-    if [ "$arch" = "other" ]; then
-        echo "Unsupported architecture $(uname -m). Only x64 and arm64 binaries are available."
-        exit 1
-    fi
+  if [ "$arch" = "other" ]; then
+    echo "Unsupported architecture $(uname -m). Only x64 and arm64 binaries are available."
+    exit 1
+  fi
 
-    # 3. Construct Download URL
-    if [[ "$install_version" =~ ^(stable|fast|candidate|latest)(-[0-9]+\.[0-9]+)?$ ]]; then
-        download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}.tar.gz"
-    else
-        download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}-${install_version}.tar.gz"
-    fi
+  # 3. Construct Download URL
+  if [[ "$install_version" =~ ^(stable|fast|candidate|latest)(-[0-9]+\.[0-9]+)?$ ]]; then
+    download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}.tar.gz"
+  else
+    download="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${install_version}/openshift-install-${os}${arch}-${install_version}.tar.gz"
+  fi
 
-    # 4. Download and extract directly into ASDF_DOWNLOAD_PATH
-    echo "Downloading openshift-install from ${download}"
-    mkdir -p "${download_path}"
-    curl -fL# -N "${download}" | tar -xz -C "${download_path}"
+  # 4. Download and extract directly into ASDF_DOWNLOAD_PATH
+  echo "Downloading openshift-install from ${download}"
+  mkdir -p "${download_path}"
+  curl -fL# -N "${download}" | tar -xz -C "${download_path}"
 }
 
 # Ensure required variables are present
