@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # executable
-set -e
+set -exo pipefail
 
 download_oi() {
   local install_version=$1
@@ -37,6 +37,9 @@ download_oi() {
   echo "Downloading openshift-install from ${download}"
   mkdir -p "${download_path}"
   curl -fL# -N "${download}" | tar -xz -C "${download_path}"
+  # DEBUG: Show us exactly what was extracted!
+  echo "--- CONTENTS OF DOWNLOAD PATH ---"
+  ls -la "${download_path}"
 }
 
 # Ensure required variables are present
