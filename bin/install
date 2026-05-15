@@ -68,4 +68,5 @@ if [ -z "$ASDF_INSTALL_VERSION" ] || [ -z "$ASDF_INSTALL_PATH" ]; then
   exit 1
 fi
 
+# echo something
 install_oi "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
